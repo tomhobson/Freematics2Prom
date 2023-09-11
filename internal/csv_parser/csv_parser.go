@@ -12,7 +12,7 @@ type csvParser struct {
 	pidToName map[string]string
 }
 
-func NewCsvParser() (*domain.FreematicsCSVParser, error) {
+func NewCsvParser() domain.FreematicsCSVParser {
 	uc := csvParser{
 		pidToName: map[string]string{
 			"10D": "Vehicle Speed (km/h)",
@@ -42,10 +42,8 @@ func NewCsvParser() (*domain.FreematicsCSVParser, error) {
 			"15e": "Engine Fuel Rate (L/h)",
 		},
 	}
-	return &uc, nil
+	return uc
 }
-
-var pidToName = map[string]string{}
 
 type AccelerometerData struct {
 	X, Y, Z float64
@@ -55,7 +53,7 @@ type GyroscopeData struct {
 	X, Y, Z float64
 }
 
-func (c *csvParser) ParseCSV(csvData string) ([]models.FreematicsData, error) {
+func (c csvParser) ParseCSV(csvData string) ([]models.FreematicsData, error) {
 	lines := strings.Split(csvData, "\n")
 	dataPoints := make([]models.FreematicsData, 0)
 
@@ -69,8 +67,9 @@ func (c *csvParser) ParseCSV(csvData string) ([]models.FreematicsData, error) {
 		pid := parts[0]
 		values := strings.Split(parts[1], ";")
 
-		name, ok := pidToName[pid]
+		name, ok := c.pidToName[pid]
 		if !ok {
+			fmt.Printf("Unknown PID: %s\n", pid)
 			name = "Unknown"
 		}
 
@@ -107,11 +106,6 @@ func (c *csvParser) ParseCSV(csvData string) ([]models.FreematicsData, error) {
 		}
 
 		dataPoints = append(dataPoints, dataPoint)
-	}
-
-	// Print the parsed data with names and units
-	for _, dp := range dataPoints {
-		fmt.Printf("Name: %s, Value: %v\n", dp.Name, dp.Value)
 	}
 
 	return dataPoints, nil

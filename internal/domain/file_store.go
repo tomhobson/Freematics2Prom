@@ -1,5 +1,5 @@
 package domain
 
 type FileStore interface {
-	ReadFile() (string, error)
+	ReadFile(filePath string) (string, error)
 }
