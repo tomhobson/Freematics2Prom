@@ -15,31 +15,46 @@ type csvParser struct {
 func NewCsvParser() domain.FreematicsCSVParser {
 	uc := csvParser{
 		pidToName: map[string]string{
-			"10D": "Vehicle Speed (km/h)",
+			// Standard PIDs
+			"104": "Engine Load",
+			"105": "Coolant Temperature",
+			"10A": "Fuel Pressure",
+			"10B": "Intake Manifold Pressure",
 			"10C": "Engine RPM",
-			"111": "Throttle Position (%)",
-			"104": "Engine Load (%)",
-			"10A": "Fuel Pressure (kPa)",
-			"10E": "Timing Advance (degrees)",
-			"24":  "Battery Voltage (V)",
-			"20":  "Accelerometer Data",
-			"21":  "Gyroscope Data",
-			"11":  "UTC Date",
-			"10":  "UTC Time",
-			"A":   "Latitude",
-			"B":   "Longitude",
-			"C":   "Altitude (m)",
-			"D":   "Speed (m/s)",
-			"E":   "Course (degrees)",
-			"F":   "Number of Satellites",
-			"22":  "Magnitude Field Data",
-			"23":  "MEMS Temperature (°C)",
-			"25":  "Orientation Data",
-			"81":  "Cellular Network Signal Level (dB)",
-			"83":  "CPU Hall Sensor Data",
-			"15b": "Hybrid Battery Pack Remaining Life (%)",
-			"15c": "Engine Oil Temperature (°C)",
-			"15e": "Engine Fuel Rate (L/h)",
+			"10D": "Vehicle Speed",
+			"10E": "Timing Advance",
+			"10F": "Intake Air Temperature",
+			"110": "MAF Air Flow Rate",
+			"111": "Throttle Position",
+			"11f": "Run Time Since Engine Start",
+			"121": "Distance Traveled with malfunction indicator lamp on",
+			"12f": "Fuel Level Input",
+			"131": "Distance traveled since codes cleared",
+			"133": "Barometric Pressure",
+			"142": "Control module voltage",
+			"143": "Absolute Load Value",
+			"15B": "Hybrid battery pack remaining life",
+			"15C": "Engine oil temperature",
+			"15E": "Engine fuel rate",
+
+			// Freematics Specific PIDS
+			"11": "UTC Date",
+			"10": "UTC Time",
+			"A":  "Latitude",
+			"B":  "Longitude",
+			"C":  "Altitude",
+			"D":  "Speed",
+			"E":  "Course",
+			"F":  "Number of satellites in use",
+			"20": "Accelerometer data",
+			"21": "Gyroscope data",
+			"22": "Magnitude field data",
+			"23": "MEMS temperature",
+			"24": "Battery voltage",
+			"25": "Orientation data",
+			"81": "Cellular network signal level",
+			"82": "CPU temperature",
+			"83": "CPU hall sensor data",
 		},
 	}
 	return uc
@@ -111,9 +126,8 @@ func (c csvParser) ParseCSV(csvData string) ([]models.FreematicsData, error) {
 	return dataPoints, nil
 }
 
-func convertToKmph(speedMps string) float64 {
-	speed, _ := strconv.ParseFloat(speedMps, 64)
-	return speed * 3.6 // 1 m/s = 3.6 km/h
+func convertToKmph(speed string) string {
+	return fmt.Sprintf("%s"+" km/h", speed)
 }
 
 func convertToKpa(pressureKpa string) float64 {
